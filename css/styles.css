@@ -1,0 +1,80 @@
+/* /assets/css/styles.css */
+
+/* Background Image */
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.container {
+    background-image: url('/images/form.jpg'); /* Path to your image */
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width : 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Login Form Styling */
+.login-form {
+    background: rgba(255, 255, 255, 0.8); /* Light white background with opacity */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: row; /* Use flexbox for row layout */
+    gap: 60px;  /* Add space between the image and the form */
+}
+
+/* Styling for the login image */
+.login-form .login-image {
+    flex: 1;
+    background-image: url('../images/login.jpg'); /* Replace with your image path */
+    background-size: cover;
+    background-position: center center;
+    border-radius: 8px;
+    height: 100%; /* Make the image take up the full height of the form box */
+}
+
+/* Adjust the form elements */
+.login-form .form-content {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* Center content vertically */
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: bold;
+    font-style: italic;
+}
+
+/*.btn-login {*/
+/*    width: 100%;*/
+/*    padding: 10px;*/
+/*}*/
+
+.btn-login {
+    width: auto; /* Make the button smaller */
+    padding: 8px 20px; /* Adjust padding to make it smaller */
+    font-size: 14px;  /* Make the text smaller */
+}
+
+.text-right {
+    text-align: right; /* Align the button to the right */
+}
+
+
+
+
+
+
