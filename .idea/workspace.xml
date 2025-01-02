@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e74ac19-ed19-40b4-9d95-3156d181e9df" name="Changes" comment="Initial" />
+    <list default="true" id="4e74ac19-ed19-40b4-9d95-3156d181e9df" name="Changes" comment="Initial">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,6 +23,7 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PATH_TO_GIT" value="C:\Program Files\Git\cmd\git.exe" />
     <option name="PREVIOUS_COMMIT_AUTHORS">
       <list>
         <option value="https://github.com/andjakarbunara/databaze.git" />
@@ -51,7 +54,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.CommitDialog",
+    "settings.editor.selected.configurable": "vcs.Git",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -65,6 +68,8 @@
       <updated>1735092976267</updated>
       <workItem from="1735092979123" duration="22609000" />
       <workItem from="1735765607289" duration="769000" />
+      <workItem from="1735768990430" duration="331000" />
+      <workItem from="1735769541777" duration="527000" />
     </task>
     <task id="LOCAL-00001" summary="Initial">
       <option name="closed" value="true" />
