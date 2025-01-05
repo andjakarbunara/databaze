@@ -172,7 +172,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 </form>
             <?php else: ?>
                 <div class="alert alert-info" role="alert">
-                    Your cart is empty. <a href="index.php">Continue shopping</a>
+                    Your cart is empty. <a href="homepage.php">Continue shopping</a>
                 </div>
             <?php endif; ?>
         </div>

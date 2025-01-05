@@ -2,6 +2,7 @@
 session_start();
 include('includes/db.php'); // Ensure this file establishes a PDO connection as $conn
 
+
 // Function to add a book to the cart
 if (isset($_GET['action']) && $_GET['action'] == 'add') {
     $isbn = $_GET['isbn'];
@@ -92,6 +93,134 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
             text-align: center;
             padding: 20px 0;
         }
+
+        .main-nav {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 1rem;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transform: translateY(-2px);
+}
+
+.nav-link:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: white;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover:after {
+    width: 70%;
+}
+
+/* Cart item count styling */
+.cart-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cart-count {
+    background: #e74c3c;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: bold;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+/* User section styling */
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+    padding: 0 1rem;
+}
+
+.nav-user-email {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.btn-auth {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-auth:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-logout {
+    background: #e74c3c;
+    border: none;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .nav-user {
+        flex-direction: column;
+        margin: 1rem 0;
+        padding: 0;
+    }
+
+    .nav-link:after {
+        display: none;
+    }
+}
     </style>
 </head>
 
@@ -107,6 +236,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
             <li class="nav-item"><a class="nav-link text-white" href="cart.php">My Cart (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : '0'; ?>)</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="orders.php">My Orders</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Contact</a></li>
+            <?php if(isset($_SESSION['userID'])): ?>
+                <div class="nav-user">
+                    <span class="nav-user-email"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
+                    <a href="logout.php" class="btn-auth btn-logout">Logout</a>
+                </div>
+            <?php else: ?>
+                <a href="login.php" class="btn-auth">Login</a>
+            <?php endif; ?>
         </ul>
     </nav>
 </header>

@@ -2,9 +2,42 @@
 session_start();
 include('includes/db.php');
 
-// Redirect to cart if cart is empty
+// Redirect to cart if the cart is empty
 if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
     header("Location: cart.php");
+    exit();
+}
+
+// Check if the user is logged in and has a 'client' role
+if (isset($_SESSION['userID']) && isset($_SESSION['role']) && $_SESSION['role'] === 'client') {
+    // Fetch customer details from the Customers table and email from the users table
+    $userId = $_SESSION['userID'];
+    $stmt = $conn->prepare("SELECT c.FirstName, c.LastName, c.Address, c.City, c.State, c.Zip, u.Email, c.customerId 
+                            FROM Customers c 
+                            JOIN users u ON c.userID = u.userID 
+                            WHERE c.userID = ?");
+    $stmt->execute([$userId]);
+    $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Ensure customer data is fetched
+    if ($customer) {
+        // Initialize variables for form inputs
+        $firstName = $customer['FirstName'];
+        $lastName = $customer['LastName'];
+        $address = $customer['Address'];
+        $city = $customer['City'];
+        $state = $customer['State'];
+        $zip = $customer['Zip'];
+        $email = $customer['Email'];
+        $customerId = $customer['customerId']; // Get the correct customerId
+    } else {
+        // If no customer is found for the logged-in user
+        echo "Customer details not found. Please contact support.";
+        exit();
+    }
+} else {
+    // Redirect to login if user is not logged in or doesn't have 'client' role
+    header("Location: login.php");
     exit();
 }
 
@@ -29,9 +62,7 @@ if (isset($_POST['submit'])) {
             $idExists = $stmt->fetchColumn();
         } while ($idExists);
 
-        // Use default customer ID 101 since we don't have login system
-        $customerId = 1005;
-
+        // Use the correct customerId obtained earlier
         // Calculate shipping cost (example: $5 flat rate)
         $shipCost = 5.00;
 
@@ -54,14 +85,16 @@ if (isset($_POST['submit'])) {
         // Clear the cart after successful order
         unset($_SESSION['cart']);
         $orderPlaced = true;
-        
+
+        echo "Order placed successfully!";
     } catch (Exception $e) {
         $conn->rollBack();
         $error = "An error occurred while processing your order: " . $e->getMessage();
+        echo $error;
     }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -140,45 +173,45 @@ if (isset($_POST['submit'])) {
                         <div class="col-md-6 mb-3">
                             <label for="firstName" class="form-label">First Name:</label>
                             <input type="text" id="firstName" name="firstName" class="form-control" 
-                                   maxlength="10" required>
+                                   maxlength="10" value="<?php echo htmlspecialchars($firstName); ?>" readonly>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="lastName" class="form-label">Last Name:</label>
                             <input type="text" id="lastName" name="lastName" class="form-control" 
-                                   maxlength="10" required>
+                                   maxlength="10" value="<?php echo htmlspecialchars($lastName); ?>" readonly>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="address" class="form-label">Address:</label>
                         <input type="text" id="address" name="address" class="form-control" 
-                               maxlength="20" required>
+                               maxlength="20" value="<?php echo htmlspecialchars($address); ?>" required>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="city" class="form-label">City:</label>
                             <input type="text" id="city" name="city" class="form-control" 
-                                   maxlength="12" required>
+                                   maxlength="12" value="<?php echo htmlspecialchars($city); ?>" required>
                         </div>
 
                         <div class="col-md-4 mb-3">
                             <label for="state" class="form-label">State:</label>
                             <input type="text" id="state" name="state" class="form-control" 
-                                   maxlength="2" required>
+                                   maxlength="2" value="<?php echo htmlspecialchars($state); ?>" required>
                         </div>
 
                         <div class="col-md-4 mb-3">
                             <label for="zip" class="form-label">Zip Code:</label>
                             <input type="text" id="zip" name="zip" class="form-control" 
-                                   maxlength="5" required>
+                                   maxlength="5" value="<?php echo htmlspecialchars($zip); ?>" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email Address:</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
+                        <input type="email" id="email" name="email" class="form-control" value="<?php echo htmlspecialchars($email); ?>" readonly>
                     </div>
 
                     <button type="submit" name="submit" class="btn btn-success w-100">Place Order</button>

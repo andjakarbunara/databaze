@@ -2,14 +2,24 @@
 session_start();
 include('includes/db.php');
 
-// Fetch all orders
+// Check if the user is logged in
+if (!isset($_SESSION['userID'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$userId = $_SESSION['userID'];
+
+// Fetch orders for the logged-in user
 try {
-    $stmt = $conn->query(
+    $stmt = $conn->prepare(
         "SELECT o.OrderId, c.FirstName, c.LastName, o.OrderDate, o.ShipDate, o.ShipCity, o.ShipState, o.ShipZip, o.ShipCost
         FROM Orders o
         JOIN Customers c ON o.CustomerId = c.CustomerId
+        WHERE c.userID = :userId
         ORDER BY o.OrderId"
     );
+    $stmt->execute([':userId' => $userId]);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
@@ -25,6 +35,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
     $shipCost = $_POST['shipCost'];
 
     try {
+        // Verify that the order belongs to the logged-in user before updating
+        $verifyStmt = $conn->prepare(
+            "SELECT o.OrderId
+            FROM Orders o
+            JOIN Customers c ON o.CustomerId = c.CustomerId
+            WHERE o.OrderId = :orderId AND c.userID = :userId"
+        );
+        $verifyStmt->execute([':orderId' => $orderId, ':userId' => $userId]);
+        if ($verifyStmt->rowCount() === 0) {
+            echo "Unauthorized action.";
+            exit();
+        }
+
         $updateStmt = $conn->prepare(
             "UPDATE Orders 
             SET ShipCity = :shipCity, ShipState = :shipState, ShipZip = :shipZip, ShipCost = :shipCost
@@ -47,7 +70,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 // Handle deleting an order
 if (isset($_GET['delete'])) {
     $orderId = $_GET['delete'];
+
     try {
+        // Verify that the order belongs to the logged-in user before deleting
+        $verifyStmt = $conn->prepare(
+            "SELECT o.OrderId
+            FROM Orders o
+            JOIN Customers c ON o.CustomerId = c.CustomerId
+            WHERE o.OrderId = :orderId AND c.userID = :userId"
+        );
+        $verifyStmt->execute([':orderId' => $orderId, ':userId' => $userId]);
+        if ($verifyStmt->rowCount() === 0) {
+            echo "Unauthorized action.";
+            exit();
+        }
+
         $deleteStmt = $conn->prepare("DELETE FROM Orders WHERE OrderId = :orderId");
         $deleteStmt->execute([':orderId' => $orderId]);
         header('Location: orders.php');
@@ -57,6 +94,7 @@ if (isset($_GET['delete'])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -100,6 +138,13 @@ if (isset($_GET['delete'])) {
         .btn {
             margin: 2px;
         }
+        .nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+    padding: 0 1rem;
+}
         .save-btn {
             background-color: #28a745;
             color: white;
@@ -120,11 +165,19 @@ if (isset($_GET['delete'])) {
     <h1>My Orders</h1>
     <nav>
         <ul class="nav justify-content-center">
-            <li class="nav-item"><a class="nav-link text-white" href="index.php">Home</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="homepage.php">Home</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Categories</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="cart.php">My Cart (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : '0'; ?>)</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="orders.php">My Orders</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Contact</a></li>
+            <?php if(isset($_SESSION['userID'])): ?>
+                <div class="nav-user">
+                    <span class="nav-user-email"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
+                    <a href="logout.php" class="btn-auth btn-logout">Logout</a>
+                </div>
+            <?php else: ?>
+                <a href="login.php" class="btn-auth">Login</a>
+            <?php endif; ?>
         </ul>
     </nav>
 </header>
