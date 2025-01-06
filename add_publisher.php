@@ -3,7 +3,7 @@ session_start();
 include('includes/db.php');
 
 // Check if the user is logged in
-if (!isset($_SESSION['userID' ])) {
+if (!isset($_SESSION['userID'])) {
     header('Location: login.php');
     exit();
 }
@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,44 +56,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
         }
+
         .container {
             margin-top: 20px;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 20px;
             color: black;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         .btn {
             margin: 5px;
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Create New Publisher</h1>
-    <form method="POST">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" name="name" id="name" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="contact">Contact</label>
-            <input type="text" name="contact" id="contact" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="text" name="phone" id="phone" class="form-control" required>
-        </div>
-        <button type="submit" name="save" class="btn btn-primary">Save Publisher</button>
-        <a href="books_dashboard.php" class="btn btn-secondary">Back</a>
-    </form>
-</div>
+    <div class="container">
+        <h1>Create New Publisher</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact</label>
+                <input type="text" name="contact" id="contact" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" name="phone" id="phone" class="form-control" required>
+            </div>
+            <button type="submit" name="save" class="btn btn-primary">Save Publisher</button>
+            <a href="books_dashboard.php" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

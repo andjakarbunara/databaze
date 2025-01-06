@@ -221,9 +221,10 @@ ORDER BY
         }
 
         .edit-btn {
-            background: var(--primary-color);
-            margin-right: 0.5rem;
-        }
+        background: var(--primary-color);
+        color: white;
+        margin-right: 0.5rem;
+    }
 
         .inline-form {
             display: inline-block;

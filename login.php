@@ -7,8 +7,7 @@ session_start();
 if (isset($_SESSION['userID']) && $_SESSION['role'] === 'client') {
     header("Location: homepage.php");
     exit();
-}
-else if (isset($_SESSION['userID']) && $_SESSION['role'] === 'admin') {
+} else if (isset($_SESSION['userID']) && $_SESSION['role'] === 'admin') {
     header("Location: books_dashboard.php");
     exit();
 }
@@ -21,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Query the database to find the user by email
     $sql = "SELECT * FROM users WHERE email = :email";
     $stmt = $conn->prepare($sql);
-    
+
     // Bind the parameter using bindParam (PDO method)
     $stmt->bindParam(':email', $email, PDO::PARAM_STR);
     $stmt->execute();
@@ -73,14 +72,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form id="loginForm" method="post">
                 <div class="mb-3">
                     <label for="Email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="Email" name="email" placeholder="Enter your email" required>
+                    <input type="email" class="form-control" id="Email" name="email" placeholder="Enter your email"
+                        required>
                     <div class="form-text">
                         <span id="EmailHelp" class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="Password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="Password" name="password" placeholder="Enter your password" required>
+                    <input type="password" class="form-control" id="Password" name="password"
+                        placeholder="Enter your password" required>
                     <div class="form-text">
                         <span id="PasswordHelp" class="error"></span>
                     </div>
