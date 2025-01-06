@@ -4,8 +4,12 @@ include('includes/db.php');
 session_start();
 
 // Check if the user is already logged in
-if (isset($_SESSION['userID'])) {
+if (isset($_SESSION['userID']) && $_SESSION['role'] === 'client') {
     header("Location: homepage.php");
+    exit();
+}
+else if (isset($_SESSION['userID']) && $_SESSION['role'] === 'admin') {
+    header("Location: books_dashboard.php");
     exit();
 }
 

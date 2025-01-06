@@ -12,6 +12,8 @@ $userId = $_SESSION['userID'];
 
 // Fetch orders for the logged-in user
 try {
+    if($_SESSION['role'] === 'client')
+    {
     $stmt = $conn->prepare(
         "SELECT o.OrderId, c.FirstName, c.LastName, o.OrderDate, o.ShipDate, o.ShipCity, o.ShipState, o.ShipZip, o.ShipCost
         FROM Orders o
@@ -21,7 +23,21 @@ try {
     );
     $stmt->execute([':userId' => $userId]);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
+   }
+
+else
+{
+    $stmt = $conn->prepare(
+        "SELECT o.OrderId, c.FirstName, c.LastName, o.OrderDate, o.ShipDate, o.ShipCity, o.ShipState, o.ShipZip, o.ShipCost
+        from Orders o
+        join Customers c on o.CustomerId = c.CustomerId
+        ORDER BY o.OrderId"
+    );
+    $stmt->execute();
+    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} 
+}
+catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit();
 }
@@ -104,6 +120,16 @@ if (isset($_GET['delete'])) {
     <title>Order Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+
+:root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --background-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --border-color: #e2e8f0;
+        }
         body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
@@ -111,23 +137,80 @@ if (isset($_GET['delete'])) {
         .container {
             margin-top: 20px;
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: black;
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
+        header h1 {
+            margin: 0;
+            padding: 0 2rem;
+            font-size: 1.5rem;
+        }
+
         .nav {
-        margin: 0;
-        padding: 0;
-    }
-    .nav-link {
-        color: black !important; 
-        font-size: 16px;
-    }
-    .nav-link:hover {
-        color:rgb(28, 20, 20); 
-        text-decoration: underline;
-    }
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            padding: 0.5rem 2rem;
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+    .nav-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+    padding: 0 1rem;
+}
+
+.nav-user-email {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.btn-auth {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-auth:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-logout {
+    background: #e74c3c;
+    border: none;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
         .table {
             background: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -147,7 +230,7 @@ if (isset($_GET['delete'])) {
 }
         .save-btn {
             background-color: #28a745;
-            color: white;
+            c;
         }
         .save-btn:hover {
             background-color: #218838;
@@ -164,22 +247,40 @@ if (isset($_GET['delete'])) {
 <header>
     <h1>My Orders</h1>
     <nav>
-        <ul class="nav justify-content-center">
-            <li class="nav-item"><a class="nav-link text-white" href="homepage.php">Home</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Categories</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="cart.php">My Cart (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : '0'; ?>)</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="orders.php">My Orders</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Contact</a></li>
-            <?php if(isset($_SESSION['userID'])): ?>
+    <ul class="nav">
+        <?php if (isset($_SESSION['userID'])): ?>
+            <!-- Display the links based on user role -->
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+                <!-- Admin's navbar -->
+                <li class="nav-item"><a class="nav-link" href="books_dashboard.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="orders.php">Orders</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                 <div class="nav-user">
                     <span class="nav-user-email"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
                     <a href="logout.php" class="btn-auth btn-logout">Logout</a>
                 </div>
-            <?php else: ?>
-                <a href="login.php" class="btn-auth">Login</a>
+            <?php elseif ($_SESSION['role'] === 'client'): ?>
+                <!-- Client's navbar -->
+                <li class="nav-item"><a class="nav-link" href="homepage.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+                <li class="nav-item"><a class="nav-link" href="cart.php">My Cart (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : '0'; ?>)</a></li>
+                <li class="nav-item"><a class="nav-link" href="orders.php">My Orders</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                <div class="nav-user">
+                    <span class="nav-user-email"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
+                    <a href="logout.php" class="btn-auth btn-logout">Logout</a>
+                </div>
             <?php endif; ?>
-        </ul>
-    </nav>
+        <?php else: ?>
+            <!-- Navbar for guests (not logged in) -->
+            <li class="nav-item"><a class="nav-link" href="homepage.php">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            <a href="login.php" class="btn-auth">Login</a>
+        <?php endif; ?>
+    </ul>
+</nav>
+
 </header>
 <div class="container">
     <h1>Order Management</h1>

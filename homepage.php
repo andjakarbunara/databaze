@@ -2,6 +2,9 @@
 session_start();
 include('includes/db.php'); // Ensure this file establishes a PDO connection as $conn
 
+if (isset($_SESSION['userID']) && $_SESSION['role'] === 'admin') {
+    die("Access Denied: You do not have permission to access this page.");
+}
 
 // Function to add a book to the cart
 if (isset($_GET['action']) && $_GET['action'] == 'add') {
@@ -106,6 +109,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
 .nav {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     padding: 0 1rem;
 }
@@ -230,22 +234,40 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
     <h1>Book Store</h1>
     <p>Discover and shop the best books online!</p>
     <nav>
-        <ul class="nav justify-content-center">
-            <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Categories</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="cart.php">My Cart (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : '0'; ?>)</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="orders.php">My Orders</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Contact</a></li>
-            <?php if(isset($_SESSION['userID'])): ?>
+    <ul class="nav">
+        <?php if (isset($_SESSION['userID'])): ?>
+            <!-- Display the links based on user role -->
+            <?php if ($_SESSION['role'] === 'admin'): ?>
+                <!-- Admin's navbar -->
+                <li class="nav-item"><a class="nav-link" href="homepage.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="orders.php">Orders</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                 <div class="nav-user">
                     <span class="nav-user-email"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
                     <a href="logout.php" class="btn-auth btn-logout">Logout</a>
                 </div>
-            <?php else: ?>
-                <a href="login.php" class="btn-auth">Login</a>
+            <?php elseif ($_SESSION['role'] === 'client'): ?>
+                <!-- Client's navbar -->
+                <li class="nav-item"><a class="nav-link" href="homepage.php">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+                <li class="nav-item"><a class="nav-link" href="cart.php">My Cart (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : '0'; ?>)</a></li>
+                <li class="nav-item"><a class="nav-link" href="orders.php">My Orders</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                <div class="nav-user">
+                    <span class="nav-user-email"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
+                    <a href="logout.php" class="btn-auth btn-logout">Logout</a>
+                </div>
             <?php endif; ?>
-        </ul>
-    </nav>
+        <?php else: ?>
+            <!-- Navbar for guests (not logged in) -->
+            <li class="nav-item"><a class="nav-link" href="homepage.php">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            <a href="login.php" class="btn-auth">Login</a>
+        <?php endif; ?>
+    </ul>
+</nav>
+
 </header>
 
 <!-- Main Book Section -->
