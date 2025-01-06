@@ -86,6 +86,7 @@ if (isset($_GET['delete'])) {
     $orderId = $_GET['delete'];
 
     try {
+        if ($_SESSION['role'] === 'client') {
         // Verify that the order belongs to the logged-in user before deleting
         $verifyStmt = $conn->prepare(
             "SELECT o.OrderId
@@ -98,7 +99,7 @@ if (isset($_GET['delete'])) {
             echo "Unauthorized action.";
             exit();
         }
-
+    }
         $deleteStmt = $conn->prepare("DELETE FROM Orders WHERE OrderId = :orderId");
         $deleteStmt->execute([':orderId' => $orderId]);
         header('Location: orders.php');
