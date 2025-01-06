@@ -20,7 +20,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'remove') {
 // Handle updating the cart quantities
 if (isset($_POST['update'])) {
     foreach ($_POST['quantity'] as $isbn => $quantity) {
-        $quantity = (int)$quantity;
+        $quantity = (int) $quantity;
         if ($quantity <= 0) {
             unset($_SESSION['cart'][$isbn]);
         } else {
@@ -28,7 +28,7 @@ if (isset($_POST['update'])) {
             $stmt = $conn->prepare("SELECT ISBN, Retail, Discount FROM Books WHERE ISBN = ?");
             $stmt->execute([$isbn]);
             $book = $stmt->fetch();
-            
+
             if ($book) {
                 $price = $book['Retail'] - ($book['Retail'] * ($book['Discount'] / 100));
                 $_SESSION['cart'][$isbn]['quantity'] = $quantity;
@@ -52,19 +52,28 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cart - Online Library</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { background-color: #f8f9fa; }
+        body {
+            background-color: #f8f9fa;
+        }
+
         header {
             background-color: #343a40;
             color: white;
             padding: 20px 0;
         }
-        header h1 { margin: 0; font-size: 28px; }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
         header nav ul {
             list-style: none;
             padding: 0;
@@ -72,28 +81,44 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
             display: flex;
             gap: 15px;
         }
-        header nav ul li { display: inline; }
+
+        header nav ul li {
+            display: inline;
+        }
+
         header nav ul li a {
             color: white;
             text-decoration: none;
         }
-        header nav ul li a:hover { text-decoration: underline; }
-        .cart-list table { width: 100%; border-collapse: collapse; }
-        .cart-list th, .cart-list td {
+
+        header nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .cart-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-list th,
+        .cart-list td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+
         .cart-total {
             margin-top: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .cart-total p {
             font-size: 18px;
             font-weight: bold;
         }
+
         footer {
             margin-top: 30px;
             background-color: #343a40;
@@ -143,19 +168,19 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                             foreach ($_SESSION['cart'] as $isbn => $item):
                                 $itemTotal = $item['price'] * $item['quantity'];
                                 $total += $itemTotal;
-                            ?>
+                                ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($item['title']); ?></td>
                                     <td>$<?php echo number_format($item['price'], 2); ?></td>
                                     <td>
-                                        <input type="number" name="quantity[<?php echo $isbn; ?>]" 
-                                               value="<?php echo $item['quantity']; ?>" 
-                                               min="0" class="form-control" style="width: 80px;">
+                                        <input type="number" name="quantity[<?php echo $isbn; ?>]"
+                                            value="<?php echo $item['quantity']; ?>" min="0" class="form-control"
+                                            style="width: 80px;">
                                     </td>
                                     <td>$<?php echo number_format($itemTotal, 2); ?></td>
                                     <td>
-                                        <a href="cart.php?action=remove&isbn=<?php echo $isbn; ?>" 
-                                           class="btn btn-danger btn-sm">Remove</a>
+                                        <a href="cart.php?action=remove&isbn=<?php echo $isbn; ?>"
+                                            class="btn btn-danger btn-sm">Remove</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -172,7 +197,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 </form>
             <?php else: ?>
                 <div class="alert alert-info" role="alert">
-                    Your cart is empty. <a href="index.php">Continue shopping</a>
+                    Your cart is empty. <a href="homepage.php">Continue shopping</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -186,4 +211,5 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
