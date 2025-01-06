@@ -35,10 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['role'] = $result['role'];
 
             // Redirect based on role
-            if ($result['role'] != null) {
+            if ($result['role'] == 'client') {
                 header("Location: homepage.php");
                 exit();
-            } else {
+            }
+            else if($result['role'] == 'admin') {
+                header("Location: books_dashboard.php");
+                exit();
+            }
+            else {
                 $_SESSION['error'] = "Invalid role.";
                 header("Location: login.php");
                 exit();
